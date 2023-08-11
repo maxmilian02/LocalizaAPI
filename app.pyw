@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    with open('data.json', 'r', encoding='utf-8') as json_file:
+    with open(r'C:\Users\abcma\OneDrive\Documentos\python\localiza\LocalizaAPI\data.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
     
     categories = list(data[next(iter(data))].keys())
@@ -16,7 +16,7 @@ def index():
 def get_data():
     category = request.args.get('category', 'GRUPO B - COMPACTO COM AR')
 
-    with open('data.json', 'r', encoding='utf-8') as json_file:
+    with open(r'C:\Users\abcma\OneDrive\Documentos\python\localiza\LocalizaAPI\data.json', 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
 
     labels = []
@@ -24,12 +24,18 @@ def get_data():
 
     for timestamp, prices_dict in data.items():
         labels.append(timestamp)
-        prices.append(float(prices_dict[category].replace(',', '.')))
+        price = float(prices_dict[category].replace(',', '.'))
+        prices.append(price)
+
+    minPrice = min(prices)
+    maxPrice = max(prices)
 
     chart_data = {
         'category': category,
         'labels': labels,
-        'prices': prices
+        'prices': prices,
+        'minPrice': minPrice,  # Inclua o valor mínimo no dicionário
+        'maxPrice': maxPrice   # Inclua o valor máximo no dicionário
     }
 
     return jsonify(chart_data)

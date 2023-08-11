@@ -19,7 +19,7 @@ documents_path = r'Z://config'
 # Function to fetch values from the website and return a dictionary
 def fetch_values():
     try:
-        driver = selenium_start(config_path=documents_path,downloadfolder_path=documents_path,headless=False)
+        driver = selenium_start(config_path=documents_path,downloadfolder_path=documents_path,headless=True)
         driver.get('https://www.localiza.com/brasil/pt-br')
         wait = WebDriverWait(driver, 10)
         driver.find_element(By.ID, 'mat-input-1').send_keys("Shop Boulevard Tatuape",Keys.ENTER)
@@ -94,7 +94,7 @@ def load_data_from_file(file_path):
         return None
 
 # Caminho para o arquivo onde os dados serão salvos e lidos
-data_file_path = 'data.json'
+data_file_path = r'C:\Users\abcma\OneDrive\Documentos\python\localiza\LocalizaAPI\data.json'
 
 def job():
     # Carrega os dados existentes do arquivo
@@ -114,4 +114,12 @@ def job():
     save_data_to_file(existing_data, data_file_path)
 
 # Execute the job function
-job()
+# Defina os horários em que a função será executada
+schedule.every().day.at("06:00").do(job)
+schedule.every().day.at("12:00").do(job)
+schedule.every().day.at("18:00").do(job)
+schedule.every().day.at("00:00").do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)

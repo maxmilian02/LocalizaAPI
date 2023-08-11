@@ -94,7 +94,7 @@ def load_data_from_file(file_path):
         return None
 
 # Caminho para o arquivo onde os dados serão salvos e lidos
-data_file_path = 'data.json'
+data_file_path = r'C:\Users\abcma\OneDrive\Documentos\python\localiza\LocalizaAPI\data.json'
 
 def job():
     # Carrega os dados existentes do arquivo
