@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Chart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content {
+            flex-grow: 1;
+        }
+        .footer {
+            background-color: rgba(0, 0, 0, 0.8); /* Fundo translúcido */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 content">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="text-center animate__animated animate__fadeInDown">
+                    <h1>Price Charts</h1>
+                    <label for="category" class="form-label">Select a category:</label>
+                    <select id="category" class="form-select mb-3">
+                        {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                    <button id="loadButton" class="btn btn-primary animate__animated animate__fadeInUp">Load Chart</button>
+                </div>
+                <div class="mt-4">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>This is the footer content.</p>
+    </div>
+    <script>
+        let priceChart;
+
+        const loadChart = (selectedCategory) => {
+            fetch(`/data?category=${selectedCategory}`)
+                .then(response => response.json())
+                .then(chartData => {
+                    if (priceChart) {
+                        priceChart.destroy();
+                    }
+                    
+                    const ctx = document.getElementById('priceChart').getContext('2d');
+                    priceChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartData.labels,
+                            datasets: [{
+                                label: chartData.category,
+                                data: chartData.prices,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Timestamp'
+                                    }
+                                },
+                                y: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Price'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return '$' + context.parsed.y.toFixed(2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        };
+
+        const loadButton = document.getElementById('loadButton');
+        loadButton.addEventListener('click', () => {
+            const selectedCategory = document.getElementById('category').value;
+            loadChart(selectedCategory);
+        });
+
+        // Initial load
+        const initialCategory = document.getElementById('category').value;
+        loadChart(initialCategory);
+    </script>
+</body>
+</html>
