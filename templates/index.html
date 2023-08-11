@@ -48,33 +48,35 @@
             </select>
         </div>
         <div>
-            <canvas id="barChart"></canvas>
+            <canvas id="priceChart"></canvas>
         </div>
     </div>
     <script>
-        let barChart;
+        let priceChart;
 
-        const updateBarChart = (chartData) => {
-            const ctx = document.getElementById('barChart').getContext('2d');
+        const updatePriceChart = (chartData) => {
+            const ctx = document.getElementById('priceChart').getContext('2d');
             const chartContainer = document.querySelector('.content');
             const chartWidth = chartContainer.offsetWidth;
             ctx.canvas.width = chartWidth;
             ctx.canvas.height = chartWidth * 0.7;
 
-            if (barChart) {
-                barChart.destroy();
+            if (priceChart) {
+                priceChart.destroy();
             }
 
-            barChart = new Chart(ctx, {
-                type: 'bar',
+            priceChart = new Chart(ctx, {
+                type: 'line',
                 data: {
                     labels: chartData.labels,
                     datasets: [{
                         label: chartData.category,
                         data: chartData.prices,
-                        backgroundColor: '#58A6FF',
+                        backgroundColor: 'transparent',
                         borderColor: '#58A6FF',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#58A6FF'
                     }]
                 },
                 options: {
@@ -103,8 +105,8 @@
                                 callback: function(value, index, values) {
                                     return value.toFixed(2);
                                 },
-                                min: chartData.minPrice, // Use o valor mínimo calculado
-                                max: chartData.maxPrice  // Use o valor máximo calculado
+                                min: chartData.minPrice,
+                                max: chartData.maxPrice
                             }
                         }
                     },
@@ -127,7 +129,7 @@
             fetch(`/data?category=${selectedCategory}`)
                 .then(response => response.json())
                 .then(chartData => {
-                    updateBarChart(chartData);
+                    updatePriceChart(chartData);
                 });
         });
 
@@ -135,7 +137,7 @@
         fetch(`/data?category=${initialCategory}`)
             .then(response => response.json())
             .then(chartData => {
-                updateBarChart(chartData);
+                updatePriceChart(chartData);
             });
     </script>
 </body>
